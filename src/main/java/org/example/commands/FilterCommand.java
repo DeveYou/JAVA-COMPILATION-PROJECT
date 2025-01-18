@@ -4,7 +4,7 @@ import org.example.data.Data;
 import org.example.helpers.Condition;
 
 public class FilterCommand extends Command{
-    private Condition condition;
+    private final Condition condition;
 
     public FilterCommand(Condition condition) {
         this.condition = condition;
@@ -12,10 +12,6 @@ public class FilterCommand extends Command{
 
     public Condition getCondition() {
         return condition;
-    }
-
-    public void setCondition(Condition condition) {
-        this.condition = condition;
     }
 
     @Override

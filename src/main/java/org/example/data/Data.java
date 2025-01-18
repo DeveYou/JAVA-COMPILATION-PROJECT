@@ -16,7 +16,9 @@ public class Data {
     public Data(List<Map<String, String>> data) {
         this.data = data;
     }
-
+    public Data() {
+        this.data = null;
+    }
     public void filter(Condition condition) {
         DataFiltering.filterData(this.data, condition);
     }
@@ -25,8 +27,8 @@ public class Data {
         DataSelecting.selectColumns(this.data, columns);
     }
 
-    public static void calculate(Aggregation aggregation) {
-        DataCalculating.calculateAggregation(this.data, aggregation);
+    public void calculate(Aggregation aggregation) {
+        DataCalculating.calculateAggregation(data, aggregation);
     }
 
     public void group(Columns groupColumns, Aggregation aggregation) {
@@ -35,5 +37,8 @@ public class Data {
 
     public List<Map<String, String>> getData() {
         return data;
+    }
+    public void setData(List<Map<String, String>> data) {
+        this.data = data;
     }
 }

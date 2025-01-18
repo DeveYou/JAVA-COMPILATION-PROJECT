@@ -6,8 +6,8 @@ import org.example.helpers.Aggregation;
 import org.example.helpers.Columns;
 
 public class GroupCommand extends Command{
-    private Columns groupColumns;
-    private Aggregation aggregation;
+    private final Columns groupColumns;
+    private final Aggregation aggregation;
 
     public GroupCommand(Columns groupColumns, Aggregation aggregation) {
         this.groupColumns = groupColumns;
@@ -18,16 +18,8 @@ public class GroupCommand extends Command{
         return groupColumns;
     }
 
-    public void setGroupColumns(Columns groupColumns) {
-        this.groupColumns = groupColumns;
-    }
-
     public Aggregation getAggregation() {
         return aggregation;
-    }
-
-    public void setAggregation(Aggregation aggregation) {
-        this.aggregation = aggregation;
     }
 
     @Override

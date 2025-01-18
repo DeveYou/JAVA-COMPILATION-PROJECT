@@ -2,37 +2,46 @@ package org.example;
 
 import org.example.commands.*;
 import org.example.data.Data;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Map;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        // Read CSV data
-        DataCharging dataCharger = new DataCharging();
-        List<Map<String, String>> data = dataCharger.readCSV("data.csv");
+        // Create Data object
+        Data data = new Data();
 
         // Read input commands
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        String input = reader.readLine();
+        String input;
 
-        // Parse commands
-        //Parser parser = new Parser();
-        //Command command = parser.parseCommand(input);
-
-        // Execute commands
-        if (command instanceof FilterCommand) {
-            DataFiltering.filterData(data, ((FilterCommand) command).getCondition());
-        } else if (command instanceof SelectCommand) {
-            DataSelecting.selectColumns(data, ((SelectCommand) command).getColumns());
-        } else if (command instanceof CalculateCommand) {
-            Data.calculate(((CalculateCommand) command).getAggregation());
-        } else if (command instanceof GroupCommand) {
-            DataGrouping.groupData(data, ((GroupCommand) command).getGroupColumns(), ((GroupCommand) command).getAggregation());
+        while(true) {
+            System.out.print("Enter command: ");
+            input = reader.readLine();
+            if(input == null || input.equalsIgnoreCase("exit")){
+                break;
+            }
+            // Parse commands
+            Parser parser = new Parser();
+            try{
+                Command command = parser.parse(input);
+                // Execute commands
+                if (command instanceof ChargeCommand) {
+                    ((ChargeCommand) command).execute(data);
+                }else if (command instanceof FilterCommand) {
+                    data.filter(((FilterCommand) command).getCondition());
+                } else if (command instanceof SelectCommand) {
+                    data.select(((SelectCommand) command).getColumns());
+                } else if (command instanceof CalculateCommand) {
+                    data.calculate(((CalculateCommand) command).getAggregation());
+                } else if (command instanceof GroupCommand) {
+                    data.group(((GroupCommand) command).getGroupColumns(), ((GroupCommand) command).getAggregation());
+                }  else if (command instanceof DisplayCommand){
+                    ((DisplayCommand) command).execute(data);
+                }
+            } catch (org.example.generatedClasses.ParseException e){
+                System.err.println("Parse Error: " + e.getMessage());
+            }
         }
-
-        // Display results
-        DataDisplaying.displayTable(data);
     }
 }

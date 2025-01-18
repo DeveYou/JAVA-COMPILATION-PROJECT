@@ -1,0 +1,36 @@
+package org.example.commands;
+
+import org.example.data.Data;
+import org.example.DataCharging;
+
+import java.util.List;
+import java.util.Map;
+
+public class ChargeCommand extends Command {
+    private final String filePath;
+    private List<Map<String, String>> loadedData;
+
+    public ChargeCommand(String filePath) {
+        this.filePath = filePath;
+        this.loadedData = null; // Data will be loaded on execute method
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public List<Map<String, String>> getLoadedData(){
+        return this.loadedData;
+    }
+
+    @Override
+    public void execute(Data data) {
+        DataCharging dataCharger = new DataCharging();
+        try {
+            this.loadedData = dataCharger.readCSV(filePath);
+            data.setData(loadedData); // Set the data on the Data class.
+        } catch (Exception e) {
+            System.err.println("An error occurred during data charging: " + e.getMessage());
+        }
+    }
+}

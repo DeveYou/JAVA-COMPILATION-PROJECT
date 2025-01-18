@@ -15,12 +15,7 @@
     </properties>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/javacc/javacc -->
-        <dependency>
-            <groupId>javacc</groupId>
-            <artifactId>javacc</artifactId>
-            <version>4.1</version>
-        </dependency>
+       
     </dependencies>
 
 </project>

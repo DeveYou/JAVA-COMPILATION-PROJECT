@@ -33,37 +33,39 @@ public interface ParserConstants {
   /** RegularExpression Id. */
   int SOMME = 11;
   /** RegularExpression Id. */
-  int IDENTIFIER = 12;
+  int COUNT = 12;
   /** RegularExpression Id. */
-  int NUMBER = 13;
+  int IDENTIFIER = 13;
   /** RegularExpression Id. */
-  int STRING = 14;
+  int NUMBER = 14;
   /** RegularExpression Id. */
-  int WHITESPACE = 15;
+  int STRING = 15;
   /** RegularExpression Id. */
-  int EQ = 16;
+  int WHITESPACE = 16;
   /** RegularExpression Id. */
-  int NEQ = 17;
+  int EQ = 17;
   /** RegularExpression Id. */
-  int GT = 18;
+  int NEQ = 18;
   /** RegularExpression Id. */
-  int LT = 19;
+  int GT = 19;
   /** RegularExpression Id. */
-  int GTE = 20;
+  int LT = 20;
   /** RegularExpression Id. */
-  int LTE = 21;
+  int GTE = 21;
   /** RegularExpression Id. */
-  int COMMA = 22;
+  int LTE = 22;
   /** RegularExpression Id. */
-  int LPAREN = 23;
+  int COMMA = 23;
   /** RegularExpression Id. */
-  int RPAREN = 24;
+  int LPAREN = 24;
   /** RegularExpression Id. */
-  int SEMICOLON = 25;
+  int RPAREN = 25;
   /** RegularExpression Id. */
-  int LETTER = 26;
+  int SEMICOLON = 26;
   /** RegularExpression Id. */
-  int DIGIT = 27;
+  int LETTER = 27;
+  /** RegularExpression Id. */
+  int DIGIT = 28;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -82,6 +84,7 @@ public interface ParserConstants {
     "\"MAX\"",
     "\"MIN\"",
     "\"SOMME\"",
+    "\"COUNT\"",
     "<IDENTIFIER>",
     "<NUMBER>",
     "<STRING>",

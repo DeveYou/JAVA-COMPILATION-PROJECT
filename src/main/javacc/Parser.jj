@@ -32,6 +32,7 @@ TOKEN : {
     < MAX: "MAX" > |
     < MIN: "MIN" > |
     < SOMME : "SOMME"> |
+    < COUNT : "COUNT"> |
     < IDENTIFIER: (<LETTER> (<LETTER>|<DIGIT>|"_")*) > |
     < NUMBER: (<DIGIT>)+ > |
     < STRING: "\"" (~["\""])* "\"" > |
@@ -115,13 +116,15 @@ SelectCommand choose_statement() :
 
 
 CalculateCommand calculate_statement() :
-{ Aggregation aggregation; String columnName; String aggregationType; Token aggregationTypeToken;}
+{ Aggregation aggregation; String columnName; String aggregationType;}
 {
-    <CALCULER> <WHITESPACE> (aggregationTypeToken = <MOYENNE> { aggregationType = aggregationTypeToken.image; }
-                   | aggregationTypeToken = <MAX> { aggregationType = aggregationTypeToken.image; }
-                   | aggregationTypeToken = <MIN> { aggregationType = aggregationTypeToken.image; })
-    <WHITESPACE> columnName = column()
-    { return new CalculateCommand(new Aggregation(columnName, aggregationType)); }
+    <CALCULER> <WHITESPACE> ( <MOYENNE> { aggregationType = getToken(0).image; }
+                   |  <MAX> { aggregationType = getToken(0).image; }
+                   |  <MIN> { aggregationType = getToken(0).image; }
+                   |  <SOMME> { aggregationType = getToken(0).image; }
+                   |  <COUNT> { aggregationType = getToken(0).image; })
+    "(" columnName = column() ")"
+    { return new CalculateCommand(new Aggregation(aggregationType, columnName)); }
 }
 
 
@@ -138,7 +141,8 @@ GroupCommand group_statement() :
         (<MOYENNE> { aggregationType = getToken(0).image; }
          | <MAX> { aggregationType = getToken(0).image; }
          | <MIN> { aggregationType = getToken(0).image; }
-          |<SOMME> { aggregationType = getToken(0).image; })
+          |<SOMME> { aggregationType = getToken(0).image; }
+          |<COUNT> { aggregationType = getToken(0).image; })
         "(" aggregationColumn = column() ")"
      ]
     {
@@ -196,7 +200,7 @@ String value() :
 }
 {
     <NUMBER> { return getToken(0).image; }
-    | <STRING> { return getToken(0).image; }
+    | <STRING> { return getToken(0).image.replaceAll("\"", ""); }
     /* Default case for invalid values */
     {
         throw new ParseException("Invalid value at position " + token.beginColumn);

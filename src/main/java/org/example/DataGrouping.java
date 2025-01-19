@@ -62,6 +62,7 @@ public class DataGrouping {
             case "MOYENNE" -> calculateGroupAverage(groupRows, aggregationColumn);
             case "MAX" -> calculateGroupMax(groupRows, aggregationColumn);
             case "MIN" -> calculateGroupMin(groupRows, aggregationColumn);
+            case "COUNT" -> calculateGroupCount(groupRows, aggregationColumn);
             case "SOMME" -> calculateGroupSum(groupRows, aggregationColumn); // Added SOMME case
             default -> {
                 System.err.println("Invalid aggregation type");
@@ -168,5 +169,9 @@ public class DataGrouping {
             return sum;
         }
         return 0;
+    }
+
+    private static double calculateGroupCount(List<Map<String, String>> groupRows, String aggregationColumn){
+        return groupRows.size();
     }
 }

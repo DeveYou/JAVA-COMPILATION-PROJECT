@@ -21,7 +21,7 @@ public class Data {
         this.currentData = new ArrayList<>();
     }
     public void setData(List<Map<String, String>> data) {
-        this.initialData = new ArrayList<>(data); // Store a copy of initial data
+        this.initialData = new ArrayList<>(data); // initial data
         this.currentData = new ArrayList<>(data); // Start with a copy
     }
     public void filter(Condition condition) {

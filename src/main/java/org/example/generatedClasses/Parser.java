@@ -148,23 +148,33 @@ commands.add(cmd);
 
   final public CalculateCommand calculate_statement() throws ParseException {
     trace_call("calculate_statement");
-    try {Aggregation aggregation; String columnName; String aggregationType; Token aggregationTypeToken;
+    try {Aggregation aggregation; String columnName; String aggregationType;
       jj_consume_token(CALCULER);
       jj_consume_token(WHITESPACE);
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case MOYENNE:{
-        aggregationTypeToken = jj_consume_token(MOYENNE);
-aggregationType = aggregationTypeToken.image;
+        jj_consume_token(MOYENNE);
+aggregationType = getToken(0).image;
         break;
         }
       case MAX:{
-        aggregationTypeToken = jj_consume_token(MAX);
-aggregationType = aggregationTypeToken.image;
+        jj_consume_token(MAX);
+aggregationType = getToken(0).image;
         break;
         }
       case MIN:{
-        aggregationTypeToken = jj_consume_token(MIN);
-aggregationType = aggregationTypeToken.image;
+        jj_consume_token(MIN);
+aggregationType = getToken(0).image;
+        break;
+        }
+      case SOMME:{
+        jj_consume_token(SOMME);
+aggregationType = getToken(0).image;
+        break;
+        }
+      case COUNT:{
+        jj_consume_token(COUNT);
+aggregationType = getToken(0).image;
         break;
         }
       default:
@@ -172,9 +182,10 @@ aggregationType = aggregationTypeToken.image;
         jj_consume_token(-1);
         throw new ParseException();
       }
-      jj_consume_token(WHITESPACE);
+      jj_consume_token(LPAREN);
       columnName = column();
-{if ("" != null) return new CalculateCommand(new Aggregation(columnName, aggregationType));}
+      jj_consume_token(RPAREN);
+{if ("" != null) return new CalculateCommand(new Aggregation(aggregationType, columnName));}
     throw new Error("Missing return statement in function");
     } finally {
       trace_return("calculate_statement");
@@ -214,6 +225,11 @@ aggregationType = getToken(0).image;
           }
         case SOMME:{
           jj_consume_token(SOMME);
+aggregationType = getToken(0).image;
+          break;
+          }
+        case COUNT:{
+          jj_consume_token(COUNT);
 aggregationType = getToken(0).image;
           break;
           }
@@ -351,7 +367,7 @@ columns.add(col);
         }
       case STRING:{
         jj_consume_token(STRING);
-{if ("" != null) return getToken(0).image;}
+{if ("" != null) return getToken(0).image.replaceAll("\u005c"", "");}
 {if (true) throw new ParseException("Invalid value at position " + token.beginColumn);}
         break;
         }
@@ -381,7 +397,7 @@ columns.add(col);
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x80de,0x8000,0xde,0x620,0xe20,0x100,0x400000,0x3f0000,0x6000,};
+      jj_la1_0 = new int[] {0x100de,0x10000,0xde,0x1e20,0x1e20,0x100,0x800000,0x7e0000,0xc000,};
    }
 
   /** Constructor with InputStream. */
@@ -500,7 +516,7 @@ columns.add(col);
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[28];
+    boolean[] la1tokens = new boolean[29];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -514,7 +530,7 @@ columns.add(col);
         }
       }
     }
-    for (int i = 0; i < 28; i++) {
+    for (int i = 0; i < 29; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

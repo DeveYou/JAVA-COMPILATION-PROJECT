@@ -19,7 +19,7 @@ public class DataFiltering {
         }
 
         return   data.stream()
-                .filter(row -> condition.matches(row))
+                .filter(condition::matches)
                 .collect(Collectors.toList());
     }
 

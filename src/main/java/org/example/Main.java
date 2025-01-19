@@ -45,6 +45,7 @@ public class Main {
                             ((DisplayCommand) command).execute(data);
                         }
                     }
+                    data.resetData();
                 }
 
             } catch (org.example.generatedClasses.ParseException e){

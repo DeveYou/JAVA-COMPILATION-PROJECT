@@ -34,7 +34,6 @@ public class Data {
             return;
         }
         this.currentData =  DataFiltering.filterData(currentData, condition);
-
     }
 
     public void select(Columns columns) {
@@ -47,7 +46,6 @@ public class Data {
             return;
         }
         this.currentData =  DataSelecting.selectColumns(currentData, columns);
-
     }
 
     public void calculate(Aggregation aggregation) {

@@ -6,16 +6,14 @@ options {
 
 PARSER_BEGIN(Parser)
 package org.example.generatedClasses;
-import java.util.*;
+import java.io.StringReader;import java.util.*;
 import org.example.commands.*;
 import org.example.helpers.*;
 
 public class Parser {
-    public Command parse(String input) throws ParseException {
+    public Command parse(String input) throws ParseException{
         ReInit(new java.io.StringReader(input));
         return statement();
-    }
-    public Parser(){
     }
 }
 
@@ -76,7 +74,7 @@ Command statement() :
 
 
 ChargeCommand charger_statement() :
-{ Token t;}
+{ Token t = null;}
 {
     <CHARGER> "(" t = <STRING> ")" {return new ChargeCommand(t.image.replaceAll("\"", ""));}
 }
@@ -103,34 +101,53 @@ SelectCommand choose_statement() :
 
 
 CalculateCommand calculate_statement() :
-{ Aggregation aggregation; String columnName; String aggregationType; }
+{ Aggregation aggregation; String columnName; String aggregationType; Token aggregationTypeToken;}
 {
-    <CALCULER> "(" (aggregationType = <MOYENNE> { } | aggregationType = <MAX> { } | aggregationType = <MIN> { }) "(" columnName = column() ")" ")"
-     { return new CalculateCommand(new Aggregation(columnName,aggregationType)); }
+    <CALCULER> "(" (aggregationTypeToken = <MOYENNE> { aggregationType = aggregationTypeToken.image; }
+                   | aggregationTypeToken = <MAX> { aggregationType = aggregationTypeToken.image; }
+                   | aggregationTypeToken = <MIN> { aggregationType = aggregationTypeToken.image; })
+    "(" columnName = column() ")" ")"
+    { return new CalculateCommand(new Aggregation(columnName, aggregationType)); }
 }
+
 
 GroupCommand group_statement() :
-{ Columns groupColumns; Aggregation aggregation = null; String aggregationType; String aggregationColumn;}
+{
+    Columns groupColumns;
+    Aggregation aggregation = null;
+    String aggregationType = null;  // Initialize aggregationType
+    String aggregationColumn = null; // Initialize aggregationColumn
+    Token aggregationTypeToken = null;
+}
 {
      <GROUPER> "(" groupColumns=column_list()
-     [<PAR> "(" (aggregationType = <MOYENNE> { } | aggregationType = <MAX> { } | aggregationType = <MIN> { }) "(" aggregationColumn = column() ")"  ")"
-       {
-          aggregation = new Aggregation(aggregationColumn, aggregationType);
-       }
-     ]
+     [<PAR> "("
+        (aggregationTypeToken = <MOYENNE> { aggregationType = aggregationTypeToken.image; }
+         | aggregationTypeToken = <MAX> { aggregationType = aggregationTypeToken.image; }
+         | aggregationTypeToken = <MIN> { aggregationType = aggregationTypeToken.image; })
+        "(" aggregationColumn = column() ")"
       ")"
-    { return new GroupCommand(groupColumns, aggregation); }
+     ]
+     ")"
+    {
+        if (aggregationType != null && aggregationColumn != null) {
+            aggregation = new Aggregation(aggregationColumn, aggregationType);
+        }
+        return new GroupCommand(groupColumns, aggregation);
+    }
 }
 
+
+
 Columns column_list() :
-{ List<String> columns = new ArrayList<>(); String col;}
+{ List<String> columns = new ArrayList<String>(); String col;}
 {
     col = column() { columns.add(col);} ( "," col = column() { columns.add(col); } )*
     { return new Columns(columns); }
 }
 
 String column() :
-{ Token t;}
+{ Token t = null;}
 {
     t=<IDENTIFIER> { return t.image; }
 }
@@ -143,13 +160,13 @@ Condition condition() :
 }
 
 String operator() :
-{ Token t;}
+{ Token t = null;}
 {
     t= <EQ> | <NEQ> | <LT> | <GT> | <LTE> | <GTE>  { return t.image; }
 }
 
 String value() :
-{ Token t; }
+{ Token t = null; }
 {
     t= <NUMBER> | <STRING>  { return t.image; }
 }

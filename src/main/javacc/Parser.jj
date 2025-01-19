@@ -1,0 +1,202 @@
+options {
+    STATIC = false;
+    /*LOOKAHEAD = 1;*/
+    DEBUG_PARSER = true;
+}
+
+PARSER_BEGIN(Parser)
+package org.example.generatedClasses;
+import java.io.StringReader;import java.util.*;
+import org.example.commands.*;
+import org.example.helpers.*;
+
+public class Parser {
+    public List<Command> parse(String input) throws ParseException{
+        ReInit(new java.io.StringReader(input));
+        return commandList();
+    }
+}
+
+PARSER_END(Parser)
+
+
+TOKEN : {
+    < FILTRER: "FILTRER" > |
+    < CHOISIR: "CHOISIR" > |
+    < CALCULER: "CALCULER" > |
+    < GROUPER: "GROUPER" > |
+    < MOYENNE: "MOYENNE" > |
+     < CHARGER: "CHARGER" > |
+     < AFFICHER: "AFFICHER"> |
+    < PAR : "PAR"> |
+    < MAX: "MAX" > |
+    < MIN: "MIN" > |
+    < SOMME : "SOMME"> |
+    < COUNT : "COUNT"> |
+    < IDENTIFIER: (<LETTER> (<LETTER>|<DIGIT>|"_")*) > |
+    < NUMBER: (<DIGIT>)+ > |
+    < STRING: "\"" (~["\""])* "\"" > |
+    < WHITESPACE: [" ", "\t", "\n", "\r"] > |
+    <EQ : "="> |
+    <NEQ : "!="> |
+    <GT : ">"> |
+    <LT : "<"> |
+    <GTE : ">="> |
+    <LTE : "<="> |
+    <COMMA : ","> |
+    <LPAREN : "("> |
+    <RPAREN : ")"> |
+    <SEMICOLON : ";">
+
+}
+
+SKIP : {
+    < WHITESPACE >
+}
+
+MORE : {
+    < #LETTER: ["a"-"z", "A"-"Z"] >
+    | < #DIGIT: ["0"-"9"] >
+}
+
+List<Command> commandList() :
+{ List<Command> commands = new ArrayList<Command>(); Command cmd; }
+{
+    (
+    (<WHITESPACE>)*
+     cmd = statement() { commands.add(cmd); }
+     )* <EOF>
+    { return commands; }
+}
+
+Command statement() :
+{ Command cmd; }
+{
+    ( cmd = filter_statement()
+    | cmd = choose_statement()
+    | cmd = calculate_statement()
+    | cmd = group_statement()
+    | cmd = charger_statement()
+    | cmd = afficher_statement()
+    )
+    <SEMICOLON>
+    { return cmd; }
+}
+
+
+ChargeCommand charger_statement() :
+{ }
+{
+    <CHARGER> <WHITESPACE> <STRING>
+    { return new ChargeCommand(getToken(0).image.replaceAll("\"", "")); }
+}
+
+DisplayCommand afficher_statement() :
+{  }
+{
+    <AFFICHER> {return new DisplayCommand();}
+}
+
+FilterCommand filter_statement() :
+{ Condition condition; }
+{
+    <FILTRER> <WHITESPACE> condition=condition()
+    { return new FilterCommand(condition); }
+}
+
+
+SelectCommand choose_statement() :
+{ Columns columns; }
+{
+    <CHOISIR> <WHITESPACE> columns=column_list()
+    { return new SelectCommand(columns); }
+}
+
+
+CalculateCommand calculate_statement() :
+{ Aggregation aggregation; String columnName; String aggregationType;}
+{
+    <CALCULER> <WHITESPACE> ( <MOYENNE> { aggregationType = getToken(0).image; }
+                   |  <MAX> { aggregationType = getToken(0).image; }
+                   |  <MIN> { aggregationType = getToken(0).image; }
+                   |  <SOMME> { aggregationType = getToken(0).image; }
+                   |  <COUNT> { aggregationType = getToken(0).image; })
+    "(" columnName = column() ")"
+    { return new CalculateCommand(new Aggregation(aggregationType, columnName)); }
+}
+
+
+GroupCommand group_statement() :
+{
+    Columns groupColumns;
+    Aggregation aggregation = null;
+    String aggregationType = null;
+    String aggregationColumn = null;
+}
+{
+     <GROUPER> <WHITESPACE> groupColumns=column_list() <WHITESPACE>
+     [<PAR> <WHITESPACE>
+        (<MOYENNE> { aggregationType = getToken(0).image; }
+         | <MAX> { aggregationType = getToken(0).image; }
+         | <MIN> { aggregationType = getToken(0).image; }
+          |<SOMME> { aggregationType = getToken(0).image; }
+          |<COUNT> { aggregationType = getToken(0).image; })
+        "(" aggregationColumn = column() ")"
+     ]
+    {
+        if (aggregationType != null && aggregationColumn != null) {
+            aggregation = new Aggregation(aggregationType, aggregationColumn);
+        }
+        return new GroupCommand(groupColumns, aggregation);
+    }
+}
+
+
+
+Columns column_list() :
+{ List<String> columns = new ArrayList<String>(); String col;}
+{
+    col = column() { columns.add(col);} ( "," col = column() { columns.add(col); } )*
+    { return new Columns(columns); }
+}
+
+String column() :
+{
+    /* No initialization needed */
+}
+{
+    <IDENTIFIER> { return getToken(0).image; }
+}
+
+Condition condition() :
+{ String column; String operator; String value; }
+{
+    column = column() <WHITESPACE> operator=operator() <WHITESPACE> value=value()
+    { return new Condition(column, operator, value); }
+}
+
+String operator() :
+{ }
+{
+    <EQ> { return "="; }
+    | <NEQ> { return "!="; }
+    | <LT> { return "<"; }
+    | <GT> { return ">"; }
+    | <LTE> { return "<="; }
+    | <GTE> { return ">="; }
+    /* Default case for error handling */
+    {
+        throw new ParseException("Invalid operator at position " + token.beginColumn);
+    }
+}
+
+String value() :
+{ }
+{
+    <NUMBER> { return getToken(0).image; }
+    | <STRING> { return getToken(0).image.replaceAll("\"", ""); }
+    /* Default case for invalid values */
+    {
+        throw new ParseException("Invalid value at position " + token.beginColumn);
+    }
+}

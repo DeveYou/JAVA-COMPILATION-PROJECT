@@ -7,6 +7,7 @@ import org.example.generatedClasses.Parser;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -26,21 +27,26 @@ public class Main {
             // Parse commands
             Parser parser = new Parser(new StringReader(input));
             try{
-                Command command = parser.parse(input);
+                List<Command> commands = parser.parse(input);
                 // Execute commands
-                if (command instanceof ChargeCommand) {
-                    ((ChargeCommand) command).execute(data);
-                }else if (command instanceof FilterCommand) {
-                    data.filter(((FilterCommand) command).getCondition());
-                } else if (command instanceof SelectCommand) {
-                    data.select(((SelectCommand) command).getColumns());
-                } else if (command instanceof CalculateCommand) {
-                    data.calculate(((CalculateCommand) command).getAggregation());
-                } else if (command instanceof GroupCommand) {
-                    data.group(((GroupCommand) command).getGroupColumns(), ((GroupCommand) command).getAggregation());
-                }  else if (command instanceof DisplayCommand){
-                    ((DisplayCommand) command).execute(data);
+                if (commands != null){
+                    for (Command command : commands){
+                        if (command instanceof ChargeCommand) {
+                            ((ChargeCommand) command).execute(data);
+                        }else if (command instanceof FilterCommand) {
+                            data.filter(((FilterCommand) command).getCondition());
+                        } else if (command instanceof SelectCommand) {
+                            data.select(((SelectCommand) command).getColumns());
+                        } else if (command instanceof CalculateCommand) {
+                            data.calculate(((CalculateCommand) command).getAggregation());
+                        } else if (command instanceof GroupCommand) {
+                            data.group(((GroupCommand) command).getGroupColumns(), ((GroupCommand) command).getAggregation());
+                        }  else if (command instanceof DisplayCommand){
+                            ((DisplayCommand) command).execute(data);
+                        }
+                    }
                 }
+
             } catch (org.example.generatedClasses.ParseException e){
                 System.err.println("Parse Error: " + e.getMessage());
             }

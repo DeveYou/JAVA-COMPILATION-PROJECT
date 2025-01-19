@@ -11,9 +11,9 @@ import org.example.commands.*;
 import org.example.helpers.*;
 
 public class Parser {
-    public Command parse(String input) throws ParseException{
+    public List<Command> parse(String input) throws ParseException{
         ReInit(new java.io.StringReader(input));
-        return statement();
+        return commandList();
     }
 }
 
@@ -58,6 +58,15 @@ MORE : {
     | < #DIGIT: ["0"-"9"] >
 }
 
+List<Command> commandList() :
+{ List<Command> commands = new ArrayList<Command>(); Command cmd; }
+{
+    (
+    (<WHITESPACE>)*
+     cmd = statement() { commands.add(cmd); }
+     )* <EOF>
+    { return commands; }
+}
 
 Command statement() :
 { Command cmd; }
@@ -69,6 +78,7 @@ Command statement() :
     | cmd = charger_statement()
     | cmd = afficher_statement()
     )
+    <SEMICOLON>
     { return cmd; }
 }
 
@@ -76,18 +86,19 @@ Command statement() :
 ChargeCommand charger_statement() :
 { Token t = null;}
 {
-    <CHARGER> "(" t = <STRING> ")" {return new ChargeCommand(t.image.replaceAll("\"", ""));}
+    <CHARGER> <WHITESPACE> t = <STRING> {return new ChargeCommand(t.image.replaceAll("\"", ""));}
 }
+
 DisplayCommand afficher_statement() :
 {  }
 {
-    <AFFICHER>  {return new DisplayCommand();}
+    <AFFICHER> {return new DisplayCommand();}
 }
 
 FilterCommand filter_statement() :
 { Condition condition; }
 {
-    <FILTRER> "(" condition=condition() ")"
+    <FILTRER> <WHITESPACE> condition=condition()
     { return new FilterCommand(condition); }
 }
 
@@ -95,7 +106,7 @@ FilterCommand filter_statement() :
 SelectCommand choose_statement() :
 { Columns columns; }
 {
-    <CHOISIR> "(" columns=column_list() ")"
+    <CHOISIR> <WHITESPACE> columns=column_list()
     { return new SelectCommand(columns); }
 }
 
@@ -103,10 +114,10 @@ SelectCommand choose_statement() :
 CalculateCommand calculate_statement() :
 { Aggregation aggregation; String columnName; String aggregationType; Token aggregationTypeToken;}
 {
-    <CALCULER> "(" (aggregationTypeToken = <MOYENNE> { aggregationType = aggregationTypeToken.image; }
+    <CALCULER> <WHITESPACE> (aggregationTypeToken = <MOYENNE> { aggregationType = aggregationTypeToken.image; }
                    | aggregationTypeToken = <MAX> { aggregationType = aggregationTypeToken.image; }
                    | aggregationTypeToken = <MIN> { aggregationType = aggregationTypeToken.image; })
-    "(" columnName = column() ")" ")"
+    <WHITESPACE> columnName = column()
     { return new CalculateCommand(new Aggregation(columnName, aggregationType)); }
 }
 
@@ -120,15 +131,13 @@ GroupCommand group_statement() :
     Token aggregationTypeToken = null;
 }
 {
-     <GROUPER> "(" groupColumns=column_list()
-     [<PAR> "("
+     <GROUPER> <WHITESPACE> groupColumns=column_list()
+     [<PAR> <WHITESPACE>
         (aggregationTypeToken = <MOYENNE> { aggregationType = aggregationTypeToken.image; }
          | aggregationTypeToken = <MAX> { aggregationType = aggregationTypeToken.image; }
          | aggregationTypeToken = <MIN> { aggregationType = aggregationTypeToken.image; })
         "(" aggregationColumn = column() ")"
-      ")"
      ]
-     ")"
     {
         if (aggregationType != null && aggregationColumn != null) {
             aggregation = new Aggregation(aggregationColumn, aggregationType);
@@ -155,7 +164,7 @@ String column() :
 Condition condition() :
 { String column; String operator; String value; }
 {
-    column = column() operator=operator() value=value()
+    column = column() <WHITESPACE> operator=operator() <WHITESPACE> value=value()
     { return new Condition(column, operator, value); }
 }
 
@@ -169,4 +178,5 @@ String value() :
 { Token t = null; }
 {
     t= <NUMBER> | <STRING>  { return t.image; }
+
 }

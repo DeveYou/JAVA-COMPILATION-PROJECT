@@ -6,10 +6,54 @@ import org.example.commands.*;
 import org.example.helpers.*;
 
 public class Parser implements ParserConstants {
-    public Command parse(String input) throws ParseException{
+    public List<Command> parse(String input) throws ParseException{
         ReInit(new java.io.StringReader(input));
-        return statement();
+        return commandList();
     }
+
+  final public List<Command> commandList() throws ParseException {
+    trace_call("commandList");
+    try {List<Command> commands = new ArrayList<Command>(); Command cmd;
+      label_1:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+        case FILTRER:
+        case CHOISIR:
+        case CALCULER:
+        case GROUPER:
+        case CHARGER:
+        case AFFICHER:
+        case WHITESPACE:{
+          ;
+          break;
+          }
+        default:
+          jj_la1[0] = jj_gen;
+          break label_1;
+        }
+        label_2:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+          case WHITESPACE:{
+            ;
+            break;
+            }
+          default:
+            jj_la1[1] = jj_gen;
+            break label_2;
+          }
+          jj_consume_token(WHITESPACE);
+        }
+        cmd = statement();
+commands.add(cmd);
+      }
+      jj_consume_token(0);
+{if ("" != null) return commands;}
+    throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("commandList");
+    }
+  }
 
   final public Command statement() throws ParseException {
     trace_call("statement");
@@ -40,10 +84,11 @@ public class Parser implements ParserConstants {
         break;
         }
       default:
-        jj_la1[0] = jj_gen;
+        jj_la1[2] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
+      jj_consume_token(SEMICOLON);
 {if ("" != null) return cmd;}
     throw new Error("Missing return statement in function");
     } finally {
@@ -55,9 +100,8 @@ public class Parser implements ParserConstants {
     trace_call("charger_statement");
     try {Token t = null;
       jj_consume_token(CHARGER);
-      jj_consume_token(LPAREN);
+      jj_consume_token(WHITESPACE);
       t = jj_consume_token(STRING);
-      jj_consume_token(RPAREN);
 {if ("" != null) return new ChargeCommand(t.image.replaceAll("\u005c"", ""));}
     throw new Error("Missing return statement in function");
     } finally {
@@ -80,9 +124,8 @@ public class Parser implements ParserConstants {
     trace_call("filter_statement");
     try {Condition condition;
       jj_consume_token(FILTRER);
-      jj_consume_token(LPAREN);
+      jj_consume_token(WHITESPACE);
       condition = condition();
-      jj_consume_token(RPAREN);
 {if ("" != null) return new FilterCommand(condition);}
     throw new Error("Missing return statement in function");
     } finally {
@@ -94,9 +137,8 @@ public class Parser implements ParserConstants {
     trace_call("choose_statement");
     try {Columns columns;
       jj_consume_token(CHOISIR);
-      jj_consume_token(LPAREN);
+      jj_consume_token(WHITESPACE);
       columns = column_list();
-      jj_consume_token(RPAREN);
 {if ("" != null) return new SelectCommand(columns);}
     throw new Error("Missing return statement in function");
     } finally {
@@ -108,7 +150,7 @@ public class Parser implements ParserConstants {
     trace_call("calculate_statement");
     try {Aggregation aggregation; String columnName; String aggregationType; Token aggregationTypeToken;
       jj_consume_token(CALCULER);
-      jj_consume_token(LPAREN);
+      jj_consume_token(WHITESPACE);
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case MOYENNE:{
         aggregationTypeToken = jj_consume_token(MOYENNE);
@@ -126,14 +168,12 @@ aggregationType = aggregationTypeToken.image;
         break;
         }
       default:
-        jj_la1[1] = jj_gen;
+        jj_la1[3] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
-      jj_consume_token(LPAREN);
+      jj_consume_token(WHITESPACE);
       columnName = column();
-      jj_consume_token(RPAREN);
-      jj_consume_token(RPAREN);
 {if ("" != null) return new CalculateCommand(new Aggregation(columnName, aggregationType));}
     throw new Error("Missing return statement in function");
     } finally {
@@ -149,12 +189,12 @@ aggregationType = aggregationTypeToken.image;
     String aggregationColumn = null; // Initialize aggregationColumn
     Token aggregationTypeToken = null;
       jj_consume_token(GROUPER);
-      jj_consume_token(LPAREN);
+      jj_consume_token(WHITESPACE);
       groupColumns = column_list();
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case PAR:{
         jj_consume_token(PAR);
-        jj_consume_token(LPAREN);
+        jj_consume_token(WHITESPACE);
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case MOYENNE:{
           aggregationTypeToken = jj_consume_token(MOYENNE);
@@ -172,21 +212,19 @@ aggregationType = aggregationTypeToken.image;
           break;
           }
         default:
-          jj_la1[2] = jj_gen;
+          jj_la1[4] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         jj_consume_token(LPAREN);
         aggregationColumn = column();
         jj_consume_token(RPAREN);
-        jj_consume_token(RPAREN);
         break;
         }
       default:
-        jj_la1[3] = jj_gen;
+        jj_la1[5] = jj_gen;
         ;
       }
-      jj_consume_token(RPAREN);
 if (aggregationType != null && aggregationColumn != null) {
             aggregation = new Aggregation(aggregationColumn, aggregationType);
         }
@@ -202,7 +240,7 @@ if (aggregationType != null && aggregationColumn != null) {
     try {List<String> columns = new ArrayList<String>(); String col;
       col = column();
 columns.add(col);
-      label_1:
+      label_3:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case COMMA:{
@@ -210,8 +248,8 @@ columns.add(col);
           break;
           }
         default:
-          jj_la1[4] = jj_gen;
-          break label_1;
+          jj_la1[6] = jj_gen;
+          break label_3;
         }
         jj_consume_token(COMMA);
         col = column();
@@ -250,7 +288,7 @@ columns.add(col);
 
   final public String operator() throws ParseException {
     trace_call("operator");
-    try {Token t = null;
+    try {Token t = new Token();
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case EQ:{
         t = jj_consume_token(EQ);
@@ -278,7 +316,7 @@ columns.add(col);
         break;
         }
       default:
-        jj_la1[5] = jj_gen;
+        jj_la1[7] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -290,7 +328,7 @@ columns.add(col);
 
   final public String value() throws ParseException {
     trace_call("value");
-    try {Token t = null;
+    try {Token t = new Token();
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case NUMBER:{
         t = jj_consume_token(NUMBER);
@@ -302,7 +340,7 @@ columns.add(col);
         break;
         }
       default:
-        jj_la1[6] = jj_gen;
+        jj_la1[8] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -321,13 +359,13 @@ columns.add(col);
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[7];
+  final private int[] jj_la1 = new int[9];
   static private int[] jj_la1_0;
   static {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0xde,0x620,0x620,0x100,0x400000,0x3f0000,0x6000,};
+      jj_la1_0 = new int[] {0x80de,0x8000,0xde,0x620,0x620,0x100,0x400000,0x3f0000,0x6000,};
    }
 
   /** Constructor with InputStream. */
@@ -341,7 +379,7 @@ columns.add(col);
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 7; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -355,7 +393,7 @@ columns.add(col);
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 7; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -365,7 +403,7 @@ columns.add(col);
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 7; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -375,7 +413,7 @@ columns.add(col);
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 7; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -384,7 +422,7 @@ columns.add(col);
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 7; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -393,7 +431,7 @@ columns.add(col);
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 7; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 9; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -451,7 +489,7 @@ columns.add(col);
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 9; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {

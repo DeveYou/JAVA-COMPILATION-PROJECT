@@ -55,28 +55,19 @@ public class DataGrouping {
 
     }
 
-    private static double calculateGroupAggregation(List<Map<String, String>> groupRows, Aggregation aggregation){
+    static double calculateGroupAggregation(List<Map<String, String>> groupRows, Aggregation aggregation){
         String aggregationColumn = aggregation.getColumn();
         String aggregationType = aggregation.getType();
-        double aggregatedValue = 0;
-        switch (aggregationType) {
-            case "MOYENNE":
-                aggregatedValue = calculateGroupAverage(groupRows, aggregationColumn);
-                break;
-            case "MAX":
-                aggregatedValue = calculateGroupMax(groupRows,aggregationColumn);
-                break;
-            case "MIN":
-                aggregatedValue = calculateGroupMin(groupRows, aggregationColumn);
-                break;
-            case "SOMME":
-                aggregatedValue = calculateGroupSum(groupRows, aggregationColumn); // Added SOMME case
-                break;
-            default:
+        double aggregatedValue = switch (aggregationType) {
+            case "MOYENNE" -> calculateGroupAverage(groupRows, aggregationColumn);
+            case "MAX" -> calculateGroupMax(groupRows, aggregationColumn);
+            case "MIN" -> calculateGroupMin(groupRows, aggregationColumn);
+            case "SOMME" -> calculateGroupSum(groupRows, aggregationColumn); // Added SOMME case
+            default -> {
                 System.err.println("Invalid aggregation type");
-                aggregatedValue = 0.0;
-                break;
-        }
+                yield 0.0;
+            }
+        };
         return aggregatedValue;
     }
 
@@ -86,17 +77,20 @@ public class DataGrouping {
 
         for (Map<String, String> row : groupRows) {
             String valueStr = row.get(aggregationColumn);
-            if (valueStr != null){
-                try{
+            if (valueStr != null) {
+                try {
                     double value = Double.parseDouble(valueStr);
                     sum += value;
                     count++;
-                } catch (NumberFormatException e){
-                    System.err.println("Invalid number format: " + valueStr);
-                    // Skip this row if the number format is invalid
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid number format: " + valueStr + ", skipping row for average calculation");
+                    // Skip to the next row if the value cannot be parsed
                 }
+            }else {
+                System.err.println("Missing value for column: " + aggregationColumn + ", skipping row for average calculation");
             }
         }
+
 
         if (count > 0) {
             return sum / count;

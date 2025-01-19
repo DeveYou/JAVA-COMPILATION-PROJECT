@@ -131,20 +131,19 @@ GroupCommand group_statement() :
     Aggregation aggregation = null;
     String aggregationType = null;  // Initialize aggregationType
     String aggregationColumn = null; // Initialize aggregationColumn
-    Token aggregationTypeToken = null;
 }
 {
      <GROUPER> <WHITESPACE> groupColumns=column_list() <WHITESPACE>
      [<PAR> <WHITESPACE>
-        (aggregationTypeToken = <MOYENNE> { aggregationType = aggregationTypeToken.image; }
-         | aggregationTypeToken = <MAX> { aggregationType = aggregationTypeToken.image; }
-         | aggregationTypeToken = <MIN> { aggregationType = aggregationTypeToken.image; }
-          | aggregationTypeToken = <SOMME> { aggregationType = aggregationTypeToken.image; })
+        (<MOYENNE> { aggregationType = getToken(0).image; }
+         | <MAX> { aggregationType = getToken(0).image; }
+         | <MIN> { aggregationType = getToken(0).image; }
+          |<SOMME> { aggregationType = getToken(0).image; })
         "(" aggregationColumn = column() ")"
      ]
     {
         if (aggregationType != null && aggregationColumn != null) {
-            aggregation = new Aggregation(aggregationColumn, aggregationType);
+            aggregation = new Aggregation(aggregationType, aggregationColumn);
         }
         return new GroupCommand(groupColumns, aggregation);
     }

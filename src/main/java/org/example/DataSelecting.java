@@ -5,36 +5,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 public class DataSelecting {
-    public static void selectColumns(List<Map<String, String>> data, Columns columns) {
-        if (data == null || data.isEmpty() || columns == null) {
-            System.err.println("Invalid input for select operation.");
-            return;
+    public static List<Map<String,String>> selectColumns(List<Map<String, String>> data, Columns columns) {
+        if(columns == null || columns.getColumnNames().isEmpty()) {
+            System.err.println("Invalid columns to select.");
+            return null;
+        }
+        if(data == null || data.isEmpty()){
+            System.err.println("No data to select");
+            return null;
         }
 
         List<String> columnNames = columns.getColumnNames();
-        if(columnNames == null || columnNames.isEmpty()){
-            System.err.println("Invalid columns for select operation.");
-            return;
-        }
+        return data.stream()
+                .map(row -> {
+                    Map<String, String> selectedRow = row.entrySet().stream()
+                            .filter(entry -> columnNames.contains(entry.getKey()))
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    return selectedRow;
 
-        try{
-            List<Map<String, String>> result = new ArrayList<>();
-            for(Map<String, String> row : data){
-                Map<String, String> selectedRow = new HashMap<>();
-                for(String columnName : columnNames){
-                    if(row.containsKey(columnName)){
-                        selectedRow.put(columnName,row.get(columnName));
-                    }
-                }
-                result.add(selectedRow);
-            }
-            data.clear();
-            data.addAll(result);
-
-        } catch (Exception e){
-            System.err.println("An error occurred during select operation: " + e.getMessage());
-        }
+                }).collect(Collectors.toList());
     }
 }

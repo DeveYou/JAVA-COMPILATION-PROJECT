@@ -1,5 +1,7 @@
 package org.example.helpers;
 
+import java.util.Map;
+
 public class Condition {
     private final String column;
     private final String operator;
@@ -22,4 +24,65 @@ public class Condition {
     public String getValue() {
         return value;
     }
+
+    public boolean matches(Map<String, String> row) {
+        if (row == null || !row.containsKey(column)) {
+            return false; // Row or column is missing
+        }
+
+        String rowValueStr = row.get(column);
+        if (rowValueStr == null) {
+            return false; // Value in the column is missing in the row
+        }
+
+        try {
+            if(isNumeric(value) && isNumeric(rowValueStr)){
+                double rowValue = Double.parseDouble(rowValueStr);
+                double conditionValue = Double.parseDouble(value);
+                return compareNumeric(rowValue, conditionValue);
+            } else {
+                return compareString(rowValueStr, value);
+            }
+        } catch (NumberFormatException e) {
+            //Handle non-numeric cases and compare as strings
+            return compareString(rowValueStr, value);
+
+        }
+    }
+    private boolean compareNumeric(double rowValue, double conditionValue){
+        return switch (operator) {
+            case "=" -> rowValue == conditionValue;
+            case "!=" -> rowValue != conditionValue;
+            case "<" -> rowValue < conditionValue;
+            case ">" -> rowValue > conditionValue;
+            case "<=" -> rowValue <= conditionValue;
+            case ">=" -> rowValue >= conditionValue;
+            default -> false; // Invalid operator, should not reach here with the correct parser
+        };
+    }
+
+    private boolean compareString(String rowValue, String conditionValue){
+        return switch (operator) {
+            case "=" -> rowValue.equals(conditionValue);
+            case "!=" -> !rowValue.equals(conditionValue);
+            default -> {
+                System.err.println("Invalid operator " + operator + " with string values" );
+                yield false;
+            }
+        };
+    }
+
+    private boolean isNumeric(String str) {
+        if (str == null) {
+            return false;
+        }
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+
 }

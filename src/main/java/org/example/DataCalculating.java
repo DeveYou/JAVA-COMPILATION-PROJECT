@@ -4,42 +4,28 @@ import org.example.helpers.Aggregation;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DataCalculating {
 
-    public static void calculateAggregation(List<Map<String, String>> data, Aggregation aggregation) {
-        if (data == null || data.isEmpty() || aggregation == null) {
-            System.err.println("Invalid input for aggregation calculation.");
-            return;
+    public static List<Map<String, String>> calculateAggregation(List<Map<String, String>> data, Aggregation aggregation) {
+        if (aggregation == null) {
+            System.err.println("Invalid aggregation parameters.");
+            return null;
         }
 
-        String column = aggregation.getColumn();
-        String type = aggregation.getType();
-
-        if (column == null || column.isEmpty()) {
-            System.err.println("Column name is missing for aggregation.");
-            return;
-        }
-        if (type == null || type.isEmpty()) {
-            System.err.println("Aggregation function type is missing.");
-            return;
+        if(data == null || data.isEmpty()){
+            System.err.println("No data to calculate");
+            return null;
         }
 
 
-        try {
-            switch (type){
-                case "MOYENNE" : calculateAverage(data, column); break;
-                case "MAX" : calculateMax(data, column); break;
-                case "MIN" : calculateMin(data,column); break;
-                default:
-                    System.err.println("Unknown aggregation function: " + type);
-            }
-
-        } catch (NumberFormatException e) {
-            System.err.println("Invalid number format in column '" + column + "': " + e.getMessage());
-        } catch (Exception e){
-            System.err.println("An error occurred during aggregation calculation: " + e.getMessage());
-        }
+        return data.stream().map(row -> {
+            double aggregatedValue = DataGrouping.calculateGroupAggregation(List.of(row), aggregation);
+            String aggregatedName = aggregation.getType() + "(" + aggregation.getColumn() + ")";
+            row.put(aggregatedName, String.valueOf(aggregatedValue));
+            return row;
+        }).collect(Collectors.toList());
 
     }
 

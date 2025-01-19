@@ -187,7 +187,7 @@ aggregationType = aggregationTypeToken.image;
     Aggregation aggregation = null;
     String aggregationType = null;  // Initialize aggregationType
     String aggregationColumn = null; // Initialize aggregationColumn
-    Token aggregationTypeToken = null;
+
       jj_consume_token(GROUPER);
       jj_consume_token(WHITESPACE);
       groupColumns = column_list();
@@ -198,23 +198,23 @@ aggregationType = aggregationTypeToken.image;
         jj_consume_token(WHITESPACE);
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case MOYENNE:{
-          aggregationTypeToken = jj_consume_token(MOYENNE);
-aggregationType = aggregationTypeToken.image;
+          jj_consume_token(MOYENNE);
+aggregationType = getToken(0).image;
           break;
           }
         case MAX:{
-          aggregationTypeToken = jj_consume_token(MAX);
-aggregationType = aggregationTypeToken.image;
+          jj_consume_token(MAX);
+aggregationType = getToken(0).image;
           break;
           }
         case MIN:{
-          aggregationTypeToken = jj_consume_token(MIN);
-aggregationType = aggregationTypeToken.image;
+          jj_consume_token(MIN);
+aggregationType = getToken(0).image;
           break;
           }
         case SOMME:{
-          aggregationTypeToken = jj_consume_token(SOMME);
-aggregationType = aggregationTypeToken.image;
+          jj_consume_token(SOMME);
+aggregationType = getToken(0).image;
           break;
           }
         default:
@@ -232,7 +232,7 @@ aggregationType = aggregationTypeToken.image;
         ;
       }
 if (aggregationType != null && aggregationColumn != null) {
-            aggregation = new Aggregation(aggregationColumn, aggregationType);
+            aggregation = new Aggregation(aggregationType, aggregationColumn);
         }
         {if ("" != null) return new GroupCommand(groupColumns, aggregation);}
     throw new Error("Missing return statement in function");

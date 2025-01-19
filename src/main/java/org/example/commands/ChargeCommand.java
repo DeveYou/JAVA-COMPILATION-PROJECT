@@ -12,7 +12,7 @@ public class ChargeCommand extends Command {
 
     public ChargeCommand(String filePath) {
         this.filePath = filePath;
-        this.loadedData = null; // Data will be loaded on execute method
+        this.loadedData = null;
     }
 
     public String getFilePath() {
@@ -28,7 +28,7 @@ public class ChargeCommand extends Command {
         DataCharging dataCharger = new DataCharging();
         try {
             this.loadedData = dataCharger.readCSV(filePath);
-            data.setData(loadedData); // Set the data on the Data class.
+            data.setData(loadedData);
         } catch (Exception e) {
             System.err.println("An error occurred during data charging: " + e.getMessage());
         }

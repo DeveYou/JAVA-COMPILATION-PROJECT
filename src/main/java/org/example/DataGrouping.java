@@ -63,7 +63,7 @@ public class DataGrouping {
             case "MAX" -> calculateGroupMax(groupRows, aggregationColumn);
             case "MIN" -> calculateGroupMin(groupRows, aggregationColumn);
             case "COUNT" -> calculateGroupCount(groupRows, aggregationColumn);
-            case "SOMME" -> calculateGroupSum(groupRows, aggregationColumn); // Added SOMME case
+            case "SOMME" -> calculateGroupSum(groupRows, aggregationColumn);
             default -> {
                 System.err.println("Invalid aggregation type");
                 yield 0.0;
@@ -85,13 +85,11 @@ public class DataGrouping {
                     count++;
                 } catch (NumberFormatException e) {
                     System.err.println("Invalid number format: " + valueStr + ", skipping row for average calculation");
-                    // Skip to the next row if the value cannot be parsed
                 }
             }else {
                 System.err.println("Missing value for column: " + aggregationColumn + ", skipping row for average calculation");
             }
         }
-
 
         if (count > 0) {
             return sum / count;

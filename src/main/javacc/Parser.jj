@@ -85,9 +85,7 @@ Command statement() :
 
 
 ChargeCommand charger_statement() :
-{
-    /* No need to initialize Token here */
-}
+{ }
 {
     <CHARGER> <WHITESPACE> <STRING>
     { return new ChargeCommand(getToken(0).image.replaceAll("\"", "")); }
@@ -132,8 +130,8 @@ GroupCommand group_statement() :
 {
     Columns groupColumns;
     Aggregation aggregation = null;
-    String aggregationType = null;  // Initialize aggregationType
-    String aggregationColumn = null; // Initialize aggregationColumn
+    String aggregationType = null;
+    String aggregationColumn = null;
 }
 {
      <GROUPER> <WHITESPACE> groupColumns=column_list() <WHITESPACE>
@@ -178,9 +176,7 @@ Condition condition() :
 }
 
 String operator() :
-{
-    /* No initialization needed */
-}
+{ }
 {
     <EQ> { return "="; }
     | <NEQ> { return "!="; }
@@ -195,9 +191,7 @@ String operator() :
 }
 
 String value() :
-{
-    /* No initialization needed */
-}
+{ }
 {
     <NUMBER> { return getToken(0).image; }
     | <STRING> { return getToken(0).image.replaceAll("\"", ""); }

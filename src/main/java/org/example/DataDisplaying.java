@@ -11,12 +11,12 @@ public class DataDisplaying {
             return;
         }
 
-        // Get the headers (column names) from the first row
+        // Get the headers (column names)
         Set<String> headers = data.get(0).keySet();
 
         // Print the headers
         for (String header : headers) {
-            System.out.printf("%-20s",header); // Adjust spacing as needed
+            System.out.printf("%-20s",header);
         }
         System.out.println();
 
@@ -29,7 +29,7 @@ public class DataDisplaying {
         // Print the rows
         for (Map<String,String> row : data){
             for(String header : headers){
-                System.out.printf("%-20s", row.get(header)); // Adjust spacing as needed
+                System.out.printf("%-20s", row.get(header));
             }
             System.out.println();
         }

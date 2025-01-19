@@ -45,7 +45,7 @@ public class DataCharging {
 
         } catch (IOException e) {
             System.err.println("Error reading CSV file: " + e.getMessage());
-            throw e; // Re-throw the exception to be handled by Main
+            throw e;
         } finally {
             if (reader != null) {
                 try {

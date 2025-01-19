@@ -27,12 +27,12 @@ public class Condition {
 
     public boolean matches(Map<String, String> row) {
         if (row == null || !row.containsKey(column)) {
-            return false; // Row or column is missing
+            return false;
         }
 
         String rowValueStr = row.get(column);
         if (rowValueStr == null) {
-            return false; // Value in the column is missing in the row
+            return false;
         }
 
         try {
@@ -44,9 +44,7 @@ public class Condition {
                 return compareString(rowValueStr, value);
             }
         } catch (NumberFormatException e) {
-            //Handle non-numeric cases and compare as strings
             return compareString(rowValueStr, value);
-
         }
     }
     private boolean compareNumeric(double rowValue, double conditionValue){
@@ -57,7 +55,7 @@ public class Condition {
             case ">" -> rowValue > conditionValue;
             case "<=" -> rowValue <= conditionValue;
             case ">=" -> rowValue >= conditionValue;
-            default -> false; // Invalid operator, should not reach here with the correct parser
+            default -> false; // Invalid operator
         };
     }
 

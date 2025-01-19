@@ -22,7 +22,7 @@ public class Data {
     }
     public void setData(List<Map<String, String>> data) {
         this.initialData = new ArrayList<>(data); // initial data
-        this.currentData = new ArrayList<>(data); // Start with a copy
+        this.currentData = new ArrayList<>(data); // copy of data
     }
     public void filter(Condition condition) {
         if (condition == null) {

@@ -196,9 +196,8 @@ aggregationType = getToken(0).image;
     trace_call("group_statement");
     try {Columns groupColumns;
     Aggregation aggregation = null;
-    String aggregationType = null;  // Initialize aggregationType
-    String aggregationColumn = null; // Initialize aggregationColumn
-
+    String aggregationType = null;
+    String aggregationColumn = null;
       jj_consume_token(GROUPER);
       jj_consume_token(WHITESPACE);
       groupColumns = column_list();

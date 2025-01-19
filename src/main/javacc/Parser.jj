@@ -1,6 +1,6 @@
 options {
     STATIC = false;
-    LOOKAHEAD = 1;
+    /*LOOKAHEAD = 1;*/
     DEBUG_PARSER = true;
 }
 
@@ -84,9 +84,12 @@ Command statement() :
 
 
 ChargeCommand charger_statement() :
-{ Token t = null;}
 {
-    <CHARGER> <WHITESPACE> t = <STRING> {return new ChargeCommand(t.image.replaceAll("\"", ""));}
+    /* No need to initialize Token here */
+}
+{
+    <CHARGER> <WHITESPACE> <STRING>
+    { return new ChargeCommand(getToken(0).image.replaceAll("\"", "")); }
 }
 
 DisplayCommand afficher_statement() :
@@ -131,11 +134,12 @@ GroupCommand group_statement() :
     Token aggregationTypeToken = null;
 }
 {
-     <GROUPER> <WHITESPACE> groupColumns=column_list()
+     <GROUPER> <WHITESPACE> groupColumns=column_list() <WHITESPACE>
      [<PAR> <WHITESPACE>
         (aggregationTypeToken = <MOYENNE> { aggregationType = aggregationTypeToken.image; }
          | aggregationTypeToken = <MAX> { aggregationType = aggregationTypeToken.image; }
-         | aggregationTypeToken = <MIN> { aggregationType = aggregationTypeToken.image; })
+         | aggregationTypeToken = <MIN> { aggregationType = aggregationTypeToken.image; }
+          | aggregationTypeToken = <SOMME> { aggregationType = aggregationTypeToken.image; })
         "(" aggregationColumn = column() ")"
      ]
     {
@@ -156,9 +160,11 @@ Columns column_list() :
 }
 
 String column() :
-{ Token t = null;}
 {
-    t=<IDENTIFIER> { return t.image; }
+    /* No initialization needed */
+}
+{
+    <IDENTIFIER> { return getToken(0).image; }
 }
 
 Condition condition() :
@@ -169,14 +175,31 @@ Condition condition() :
 }
 
 String operator() :
-{ Token t = null;}
 {
-    t= <EQ> | <NEQ> | <LT> | <GT> | <LTE> | <GTE>  { return t.image; }
+    /* No initialization needed */
+}
+{
+    <EQ> { return "="; }
+    | <NEQ> { return "!="; }
+    | <LT> { return "<"; }
+    | <GT> { return ">"; }
+    | <LTE> { return "<="; }
+    | <GTE> { return ">="; }
+    /* Default case for error handling */
+    {
+        throw new ParseException("Invalid operator at position " + token.beginColumn);
+    }
 }
 
 String value() :
-{ Token t = null; }
 {
-    t= <NUMBER> | <STRING>  { return t.image; }
-
+    /* No initialization needed */
+}
+{
+    <NUMBER> { return getToken(0).image; }
+    | <STRING> { return getToken(0).image; }
+    /* Default case for invalid values */
+    {
+        throw new ParseException("Invalid value at position " + token.beginColumn);
+    }
 }

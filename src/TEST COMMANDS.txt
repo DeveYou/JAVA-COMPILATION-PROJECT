@@ -1,0 +1,2 @@
+CHARGER "src/main/java/org/example/data.csv"; FILTRER Age > 30; AFFICHER;
+CHARGER "src/main/java/org/example/data.csv"; GROUPER Nom PAR MAX(Age); AFFICHER;

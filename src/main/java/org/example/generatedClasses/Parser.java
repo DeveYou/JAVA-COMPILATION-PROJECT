@@ -98,11 +98,11 @@ commands.add(cmd);
 
   final public ChargeCommand charger_statement() throws ParseException {
     trace_call("charger_statement");
-    try {Token t = null;
+    try {
       jj_consume_token(CHARGER);
       jj_consume_token(WHITESPACE);
-      t = jj_consume_token(STRING);
-{if ("" != null) return new ChargeCommand(t.image.replaceAll("\u005c"", ""));}
+      jj_consume_token(STRING);
+{if ("" != null) return new ChargeCommand(getToken(0).image.replaceAll("\u005c"", ""));}
     throw new Error("Missing return statement in function");
     } finally {
       trace_return("charger_statement");
@@ -191,6 +191,7 @@ aggregationType = aggregationTypeToken.image;
       jj_consume_token(GROUPER);
       jj_consume_token(WHITESPACE);
       groupColumns = column_list();
+      jj_consume_token(WHITESPACE);
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case PAR:{
         jj_consume_token(PAR);
@@ -208,6 +209,11 @@ aggregationType = aggregationTypeToken.image;
           }
         case MIN:{
           aggregationTypeToken = jj_consume_token(MIN);
+aggregationType = aggregationTypeToken.image;
+          break;
+          }
+        case SOMME:{
+          aggregationTypeToken = jj_consume_token(SOMME);
 aggregationType = aggregationTypeToken.image;
           break;
           }
@@ -264,9 +270,9 @@ columns.add(col);
 
   final public String column() throws ParseException {
     trace_call("column");
-    try {Token t = null;
-      t = jj_consume_token(IDENTIFIER);
-{if ("" != null) return t.image;}
+    try {
+      jj_consume_token(IDENTIFIER);
+{if ("" != null) return getToken(0).image;}
     throw new Error("Missing return statement in function");
     } finally {
       trace_return("column");
@@ -277,7 +283,9 @@ columns.add(col);
     trace_call("condition");
     try {String column; String operator; String value;
       column = column();
+      jj_consume_token(WHITESPACE);
       operator = operator();
+      jj_consume_token(WHITESPACE);
       value = value();
 {if ("" != null) return new Condition(column, operator, value);}
     throw new Error("Missing return statement in function");
@@ -288,31 +296,37 @@ columns.add(col);
 
   final public String operator() throws ParseException {
     trace_call("operator");
-    try {Token t = new Token();
+    try {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case EQ:{
-        t = jj_consume_token(EQ);
+        jj_consume_token(EQ);
+{if ("" != null) return "=";}
         break;
         }
       case NEQ:{
         jj_consume_token(NEQ);
+{if ("" != null) return "!=";}
         break;
         }
       case LT:{
         jj_consume_token(LT);
+{if ("" != null) return "<";}
         break;
         }
       case GT:{
         jj_consume_token(GT);
+{if ("" != null) return ">";}
         break;
         }
       case LTE:{
         jj_consume_token(LTE);
+{if ("" != null) return "<=";}
         break;
         }
       case GTE:{
         jj_consume_token(GTE);
-{if ("" != null) return t.image;}
+{if ("" != null) return ">=";}
+{if (true) throw new ParseException("Invalid operator at position " + token.beginColumn);}
         break;
         }
       default:
@@ -328,15 +342,17 @@ columns.add(col);
 
   final public String value() throws ParseException {
     trace_call("value");
-    try {Token t = new Token();
+    try {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case NUMBER:{
-        t = jj_consume_token(NUMBER);
+        jj_consume_token(NUMBER);
+{if ("" != null) return getToken(0).image;}
         break;
         }
       case STRING:{
         jj_consume_token(STRING);
-{if ("" != null) return t.image;}
+{if ("" != null) return getToken(0).image;}
+{if (true) throw new ParseException("Invalid value at position " + token.beginColumn);}
         break;
         }
       default:
@@ -365,7 +381,7 @@ columns.add(col);
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x80de,0x8000,0xde,0x620,0x620,0x100,0x400000,0x3f0000,0x6000,};
+      jj_la1_0 = new int[] {0x80de,0x8000,0xde,0x620,0xe20,0x100,0x400000,0x3f0000,0x6000,};
    }
 
   /** Constructor with InputStream. */

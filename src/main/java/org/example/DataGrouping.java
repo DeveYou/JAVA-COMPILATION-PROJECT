@@ -29,7 +29,7 @@ public class DataGrouping {
             for (Map.Entry<List<String>, List<Map<String, String>>> entry : groupedData.entrySet()) {
                 List<String> groupKeys = entry.getKey();
                 List<Map<String, String>> groupRows = entry.getValue();
-                Map<String, String> aggregatedRow = new HashMap<>();
+                Map<String, String> aggregatedRow = new LinkedHashMap<>();
                 for (int i = 0; i < columns.size(); i++) {
                     aggregatedRow.put(columns.get(i), groupKeys.get(i));
                 }
@@ -69,8 +69,13 @@ public class DataGrouping {
             case "MIN":
                 aggregatedValue = calculateGroupMin(groupRows, aggregationColumn);
                 break;
+            case "SOMME":
+                aggregatedValue = calculateGroupSum(groupRows, aggregationColumn); // Added SOMME case
+                break;
             default:
                 System.err.println("Invalid aggregation type");
+                aggregatedValue = 0.0;
+                break;
         }
         return aggregatedValue;
     }
@@ -144,6 +149,29 @@ public class DataGrouping {
 
         if (foundValidValue){
             return min;
+        }
+        return 0;
+    }
+
+    private static double calculateGroupSum(List<Map<String, String>> groupRows, String aggregationColumn) {
+        double sum = 0;
+        boolean foundValidValue = false;
+
+        for (Map<String, String> row : groupRows) {
+            String valueStr = row.get(aggregationColumn);
+            if (valueStr != null){
+                try{
+                    double value = Double.parseDouble(valueStr);
+                    sum += value;
+                    foundValidValue = true;
+                } catch (NumberFormatException e){
+                    System.err.println("Invalid number format: " + valueStr);
+                }
+            }
+        }
+
+        if (foundValidValue){
+            return sum;
         }
         return 0;
     }
